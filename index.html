@@ -15,14 +15,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      max-width: 700px;
+      gap: 20px;
+      max-width: 960px;
       width: 100%;
     }
 
@@ -31,25 +31,25 @@
       cursor: pointer;
       user-select: none;
       transition: transform 0.15s ease;
-      aspect-ratio: 1.3 / 1;
+      aspect-ratio: 1.4 / 1;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .card:hover  { transform: scale(1.08) translateY(-3px); }
+    .card:hover  { transform: scale(1.07) translateY(-4px); }
     .card:active { transform: scale(0.95); }
 
     .cloud-emoji {
       position: absolute;
       inset: 0;
-      font-size: clamp(70px, 14vw, 100px);
+      font-size: clamp(100px, 18vw, 160px);
       line-height: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding-top: 6px;
-      filter: drop-shadow(0 5px 8px rgba(20,60,140,0.22));
+      padding-top: 10px;
+      filter: drop-shadow(0 6px 10px rgba(20,60,140,0.22));
     }
 
     .card-label {
@@ -58,12 +58,12 @@
       font-weight: 900;
       text-align: center;
       line-height: 1.2;
-      padding: 0 8px;
-      padding-bottom: 4px;
+      padding: 0 10px;
+      padding-bottom: 6px;
     }
 
-    .card-label.num  { font-size: clamp(22px, 5vw, 32px); color: #1a4d9e; }
-    .card-label.text { font-size: clamp(10px, 2.5vw, 14px); }
+    .card-label.num  { font-size: clamp(32px, 6vw, 52px); color: #1a4d9e; }
+    .card-label.text { font-size: clamp(14px, 2.8vw, 22px); }
 
     .group-жасыл .card-label.text { color: #1e7a1e; }
     .group-таза  .card-label.text { color: #0a4d8a; }
@@ -75,24 +75,23 @@
 <div class="grid" id="grid"></div>
 
 <script>
-  // Перемешаны поочерёдно: жасыл×5, таза×5, эко×6
   const cards = [
-    { group: "жасыл", label: "Жасыл сақшылар" }, // 1
-    { group: "таза",  label: "Таза әлем" },        // 2
-    { group: "эко",   label: "Экодостар" },         // 3
-    { group: "жасыл", label: "Жасыл сақшылар" }, // 4
-    { group: "таза",  label: "Таза әлем" },        // 5
-    { group: "эко",   label: "Экодостар" },         // 6
-    { group: "жасыл", label: "Жасыл сақшылар" }, // 7
-    { group: "таза",  label: "Таза әлем" },        // 8
-    { group: "эко",   label: "Экодостар" },         // 9
-    { group: "жасыл", label: "Жасыл сақшылар" }, // 10
-    { group: "таза",  label: "Таза әлем" },        // 11
-    { group: "эко",   label: "Экодостар" },         // 12
-    { group: "жасыл", label: "Жасыл сақшылар" }, // 13
-    { group: "таза",  label: "Таза әлем" },        // 14
-    { group: "эко",   label: "Экодостар" },         // 15
-    { group: "эко",   label: "Экодостар" },         // 16
+    { group: "жасыл", label: "Жасыл сақшылар" },
+    { group: "таза",  label: "Таза әлем" },
+    { group: "эко",   label: "Экодостар" },
+    { group: "жасыл", label: "Жасыл сақшылар" },
+    { group: "таза",  label: "Таза әлем" },
+    { group: "эко",   label: "Экодостар" },
+    { group: "жасыл", label: "Жасыл сақшылар" },
+    { group: "таза",  label: "Таза әлем" },
+    { group: "эко",   label: "Экодостар" },
+    { group: "жасыл", label: "Жасыл сақшылар" },
+    { group: "таза",  label: "Таза әлем" },
+    { group: "эко",   label: "Экодостар" },
+    { group: "жасыл", label: "Жасыл сақшылар" },
+    { group: "таза",  label: "Таза әлем" },
+    { group: "эко",   label: "Экодостар" },
+    { group: "эко",   label: "Экодостар" },
   ];
 
   const grid = document.getElementById("grid");
