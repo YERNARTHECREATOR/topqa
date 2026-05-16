@@ -1,126 +1,379 @@
 <!DOCTYPE html>
 <html lang="kk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Топқа бөлу</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Буынға бөл!</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;font-family:'Fredoka One',cursive;}
+body{display:flex;flex-direction:column;background:linear-gradient(180deg,#6ec6f5 0%,#b8e8ff 32%,#d4f5a2 65%,#5acc34 100%);}
 
-    body {
-      font-family: 'Nunito', Arial, sans-serif;
-      min-height: 100vh;
-      background: linear-gradient(160deg, #5bbcf7 0%, #2e8fd6 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
+/* Sky */
+.sky{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.sun{position:absolute;top:10px;right:40px;width:60px;height:60px;background:radial-gradient(circle,#ffe566 60%,#ffd000 100%);border-radius:50%;box-shadow:0 0 44px 16px rgba(255,215,0,.4);animation:sp 4s ease-in-out infinite;}
+@keyframes sp{0%,100%{box-shadow:0 0 44px 16px rgba(255,215,0,.4)}50%{box-shadow:0 0 76px 30px rgba(255,215,0,.6)}}
+.cloud{position:absolute;background:#fff;border-radius:60px;opacity:.78;animation:cd linear infinite;}
+.cloud::before,.cloud::after{content:'';position:absolute;background:#fff;border-radius:50%;}
+.c1{width:96px;height:26px;top:40px;left:-110px;animation-duration:25s;}
+.c1::before{width:48px;height:48px;top:-24px;left:10px;}.c1::after{width:34px;height:34px;top:-17px;left:46px;}
+.c2{width:72px;height:20px;top:76px;left:-88px;animation-duration:36s;animation-delay:-16s;}
+.c2::before{width:36px;height:36px;top:-18px;left:8px;}.c2::after{width:26px;height:26px;top:-12px;left:34px;}
+@keyframes cd{from{transform:translateX(0)}to{transform:translateX(calc(100vw + 150px))}}
+.grass{position:fixed;bottom:0;left:0;right:0;height:44px;background:linear-gradient(180deg,#52c234,#348a1e);z-index:0;overflow:hidden;}
+.blade{position:absolute;bottom:0;background:#6dcc50;border-radius:50% 50% 0 0;transform-origin:bottom center;animation:sw 2s ease-in-out infinite;}
+@keyframes sw{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-      max-width: 960px;
-      width: 100%;
-    }
+/* Header — minimal */
+.header{
+  position:relative;z-index:20;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 18px;
+  background:rgba(255,255,255,.92);
+  border-bottom:3px solid #FFD700;
+  box-shadow:0 2px 12px rgba(0,0,0,.1);
+}
+.htitle{font-size:1.4rem;color:#2E7D32;text-shadow:2px 2px 0 #FFD700;}
+.hscore{
+  background:linear-gradient(135deg,#FFD700,#FF8F00);
+  color:#fff;padding:6px 16px;border-radius:18px;
+  font-size:1.1rem;box-shadow:0 3px 10px rgba(255,143,0,.3);
+}
 
-    .card {
-      position: relative;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.15s ease;
-      aspect-ratio: 1.4 / 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+/* 3×3 grid — fills all space */
+.game-grid{
+  position:relative;z-index:10;flex:1;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  gap:10px;
+  padding:10px 12px;
+  min-height:0;
+}
 
-    .card:hover  { transform: scale(1.07) translateY(-4px); }
-    .card:active { transform: scale(0.95); }
+/* Card */
+.acard{
+  background:rgba(255,255,255,.92);
+  border-radius:20px;
+  padding:10px 8px 8px;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:space-between;
+  gap:0;
+  box-shadow:0 5px 20px rgba(0,0,0,.12);
+  border:3px solid rgba(255,255,255,.6);
+  transition:border-color .3s,background .3s,box-shadow .3s;
+  position:relative;overflow:hidden;min-height:0;
+  cursor:default;
+}
+.acard.correct{
+  border-color:#4CAF50;background:rgba(232,245,233,.97);
+  box-shadow:0 0 0 4px rgba(76,175,80,.28);
+}
+.acard.wrong{border-color:#EF5350;animation:cShake .45s ease;}
+@keyframes cShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
 
-    .cloud-emoji {
-      position: absolute;
-      inset: 0;
-      font-size: clamp(100px, 18vw, 160px);
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding-top: 10px;
-      filter: drop-shadow(0 6px 10px rgba(20,60,140,0.22));
-    }
+/* Result badge — top right corner */
+.result-badge{
+  position:absolute;top:6px;right:8px;
+  font-size:1.4rem;opacity:0;
+  transform:scale(0);
+  transition:all .35s cubic-bezier(.34,1.56,.64,1);
+}
+.result-badge.show{opacity:1;transform:scale(1);}
 
-    .card-label {
-      position: relative;
-      z-index: 2;
-      font-weight: 900;
-      text-align: center;
-      line-height: 1.2;
-      padding: 0 10px;
-      padding-bottom: 6px;
-    }
+/* BIG emoji — the main visual */
+.card-emoji{
+  font-size:clamp(3.2rem,7vw,5.5rem);
+  line-height:1;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.18));
+  flex:1;
+  display:flex;align-items:center;justify-content:center;
+}
 
-    .card-label.num  { font-size: clamp(32px, 6vw, 52px); color: #1a4d9e; }
-    .card-label.text { font-size: clamp(14px, 2.8vw, 22px); }
+/* Name — small, secondary */
+.card-name{
+  font-size:clamp(.9rem,2vw,1.2rem);
+  color:#4E342E;
+  margin-bottom:4px;
+  letter-spacing:.3px;
+}
 
-    .group-жасыл .card-label.text { color: #1e7a1e; }
-    .group-таза  .card-label.text { color: #0a4d8a; }
-    .group-эко   .card-label.text { color: #7a5500; }
-  </style>
+/* Rectangle tap area */
+.rect-wrap{
+  width:100%;
+  height:clamp(36px,5.5vw,52px);
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  border-radius:10px;
+  user-select:none;
+  flex-shrink:0;
+}
+.rect-empty{
+  width:100%;height:100%;
+  border:3px dashed #90CAF9;border-radius:10px;
+  background:rgba(144,202,249,.14);
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(1.2rem,2.5vw,1.8rem);
+  transition:background .2s, transform .15s;
+}
+.rect-empty:active{transform:scale(.96);}
+.rect-sections{
+  width:100%;height:100%;display:flex;
+  border-radius:10px;overflow:hidden;
+  border:2px solid rgba(0,0,0,.08);
+  box-shadow:0 3px 10px rgba(0,0,0,.14);
+}
+.rsect{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  border-right:4px solid rgba(255,255,255,.8);
+  font-size:clamp(.55rem,1.1vw,.85rem);
+  color:white;text-shadow:1px 1px 0 rgba(0,0,0,.2);
+  animation:sectIn .3s cubic-bezier(.34,1.56,.64,1);
+  overflow:hidden;padding:0 2px;
+}
+.rsect:last-child{border-right:none;}
+@keyframes sectIn{from{opacity:0;transform:scaleX(0)}to{opacity:1;transform:scaleX(1)}}
+.s1{background:linear-gradient(160deg,#66BB6A,#43A047);}
+.s2{background:linear-gradient(160deg,#42A5F5,#1976D2);}
+.s3{background:linear-gradient(160deg,#FF7043,#E64A19);}
+.s4{background:linear-gradient(160deg,#AB47BC,#7B1FA2);}
+
+/* Dot counter below rect */
+.count-dots{
+  display:flex;gap:5px;justify-content:center;
+  margin-top:5px;
+}
+.cdot{
+  width:clamp(8px,1.4vw,12px);height:clamp(8px,1.4vw,12px);
+  border-radius:50%;background:rgba(0,0,0,.12);
+  transition:background .25s,transform .25s;
+  flex-shrink:0;
+}
+.cdot.on{background:#42A5F5;transform:scale(1.25);}
+
+/* Clap animation */
+@keyframes clapPop{
+  0%  {opacity:1;transform:translate(-50%,-50%) scale(.8)}
+  40% {opacity:1;transform:translate(-50%,-90%) scale(1.4)}
+  100%{opacity:0;transform:translate(-50%,-160%) scale(1.8)}
+}
+.clap{position:fixed;pointer-events:none;z-index:999;
+  font-size:2rem;animation:clapPop .65s ease forwards;}
+
+/* Check button — big & friendly */
+.check-btn{
+  position:relative;z-index:20;flex-shrink:0;
+  margin:0 12px 10px;
+  padding:13px 0;
+  background:linear-gradient(135deg,#4CAF50,#2E7D32);
+  color:white;border:none;border-radius:20px;
+  font-family:'Fredoka One',cursive;font-size:1.4rem;
+  cursor:pointer;
+  box-shadow:0 6px 0 rgba(30,90,30,.4), 0 8px 20px rgba(0,0,0,.15);
+  border-bottom:6px solid rgba(0,0,0,.2);
+  transition:transform .12s, box-shadow .12s;
+  letter-spacing:.5px;
+}
+.check-btn:active{transform:translateY(5px);box-shadow:0 1px 0 rgba(30,90,30,.4);}
+.check-btn.done{background:linear-gradient(135deg,#42A5F5,#1565C0);}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:58px;left:50%;transform:translateX(-50%);
+  background:rgba(20,20,20,.84);color:#fff;
+  font-family:'Fredoka One',cursive;font-size:1rem;
+  padding:9px 24px;border-radius:20px;z-index:600;
+  opacity:0;transition:opacity .28s;pointer-events:none;white-space:nowrap;
+}
+.toast.show{opacity:1;}
+
+/* Particles */
+@keyframes fUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-65px) scale(1.6)}}
+.ptcl{position:fixed;pointer-events:none;animation:fUp .9s ease forwards;z-index:300;font-size:1.4rem;}
+
+/* Win overlay */
+.winov{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.winov.show{display:flex;}
+.winbox{background:linear-gradient(145deg,#FFFDE7,#E8F5E9);border-radius:30px;padding:38px 50px;text-align:center;border:4px solid #FFD700;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:wP .55s cubic-bezier(.34,1.56,.64,1);max-width:88vw;}
+@keyframes wP{from{transform:scale(.2) rotate(-12deg);opacity:0}to{transform:scale(1);opacity:1}}
+.winbox h2{font-size:2.2rem;color:#2E7D32;margin-bottom:8px;}
+.winbox p{font-size:1rem;color:#666;margin-bottom:18px;}
+.btnr{background:linear-gradient(135deg,#FFD700,#FF8F00);color:#fff;border:none;border-radius:16px;padding:12px 34px;font-family:'Fredoka One',cursive;font-size:1.2rem;cursor:pointer;box-shadow:0 6px 0 rgba(160,70,0,.35);transition:transform .12s;}
+.btnr:active{transform:translateY(4px);}
+</style>
 </head>
 <body>
 
-<div class="grid" id="grid"></div>
+<div class="sky">
+  <div class="sun"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+</div>
+<div class="grass" id="grass"></div>
+<div class="toast" id="toast"></div>
+
+<!-- Win -->
+<div class="winov" id="win">
+  <div class="winbox">
+    <div style="font-size:3.2rem">🎉🌟🎊</div>
+    <h2>Керемет!</h2>
+    <p>Барлық буындарды дұрыс бөлдің! 👏</p>
+    <div style="font-size:2.5rem;margin:12px 0">🚗 🦁 🐑</div>
+    <button class="btnr" onclick="location.reload()">🔄 Қайта ойна!</button>
+  </div>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <div class="htitle">✂️ Буынға бөл!</div>
+  <div class="hscore">✅ <span id="sc">0</span> / 9</div>
+</div>
+
+<!-- 3×3 Grid -->
+<div class="game-grid" id="grid"></div>
+
+<!-- Check button -->
+<button class="check-btn" id="checkBtn" onclick="checkAll()">✅ Тексеру!</button>
 
 <script>
-  const cards = [
-    { group: "жасыл", label: "Жасыл сақшылар" },
-    { group: "таза",  label: "Таза әлем" },
-    { group: "эко",   label: "Экодостар" },
-    { group: "жасыл", label: "Жасыл сақшылар" },
-    { group: "таза",  label: "Таза әлем" },
-    { group: "эко",   label: "Экодостар" },
-    { group: "жасыл", label: "Жасыл сақшылар" },
-    { group: "таза",  label: "Таза әлем" },
-    { group: "эко",   label: "Экодостар" },
-    { group: "жасыл", label: "Жасыл сақшылар" },
-    { group: "таза",  label: "Таза әлем" },
-    { group: "эко",   label: "Экодостар" },
-    { group: "жасыл", label: "Жасыл сақшылар" },
-    { group: "таза",  label: "Таза әлем" },
-    { group: "эко",   label: "Экодостар" },
-    { group: "эко",   label: "Экодостар" },
-  ];
+const ITEMS = [
+  // 1 буын
+  {id:'qoi',     emoji:'☀️', name:'күн',     sylls:['күн'],           count:1},
+  {id:'nan',     emoji:'🍞', name:'нан',     sylls:['нан'],           count:1},
+  {id:'gul',     emoji:'🌸', name:'гүл',     sylls:['гүл'],           count:1},
+  // 2 буын
+  {id:'kitap',   emoji:'📗', name:'кітап',   sylls:['кі','тап'],      count:2},
+  {id:'qalam',   emoji:'✏️', name:'қалам',   sylls:['қа','лам'],      count:2},
+  {id:'alma',    emoji:'🍎', name:'алма',    sylls:['ал','ма'],       count:2},
+  // 3 буын
+  {id:'mashina', emoji:'🕷️', name:'өрмекші',  sylls:['өр','мек','ші'],  count:3},
+  {id:'arystan', emoji:'🌻', name:'күнбағыс', sylls:['күн','ба','ғыс'],count:3},
+  {id:'tasbaq',  emoji:'☂️', name:'қолшатыр', sylls:['қол','ша','тыр'],count:3},
+];
 
-  const grid = document.getElementById("grid");
+function shuffle(a){return[...a].sort(()=>Math.random()-.5);}
+const WORDS = shuffle(ITEMS);
+const COLORS = ['s1','s2','s3','s4'];
+const state = {};
+WORDS.forEach(w=>state[w.id]=0);
+let checked=false, score=0;
 
-  cards.forEach((data, i) => {
-    const card = document.createElement("div");
-    card.className = "card";
+// Grass
+(function(){
+  const g=document.getElementById('grass');
+  for(let i=0;i<44;i++){
+    const b=document.createElement('div');b.className='blade';
+    b.style.cssText=`left:${i*2.4}%;width:${11+Math.random()*7}px;height:${18+Math.random()*24}px;animation-delay:${Math.random()*2}s;animation-duration:${1.3+Math.random()}s;`;
+    g.appendChild(b);
+  }
+})();
 
-    const cloud = document.createElement("div");
-    cloud.className = "cloud-emoji";
-    cloud.textContent = "☁️";
-
-    const label = document.createElement("div");
-    label.className = "card-label num";
-    label.textContent = i + 1;
-
-    card.appendChild(cloud);
-    card.appendChild(label);
-
-    card.onclick = () => {
-      if (card.dataset.opened) return;
-      card.dataset.opened = "1";
-      card.classList.add("group-" + data.group);
-      label.className = "card-label text";
-      label.textContent = data.label;
-    };
-
+function buildGrid(){
+  const grid=document.getElementById('grid');
+  WORDS.forEach(w=>{
+    const card=document.createElement('div');
+    card.className='acard'; card.id='card-'+w.id;
+    card.innerHTML=`
+      <div class="result-badge" id="badge-${w.id}"></div>
+      <div class="card-emoji">${w.emoji}</div>
+      <div class="card-name">${w.name}</div>
+      <div class="rect-wrap" id="rect-${w.id}" onclick="tap('${w.id}',event)"></div>
+      <div class="count-dots" id="dots-${w.id}">
+        ${[1,2,3,4].map(n=>`<div class="cdot" id="d-${w.id}-${n}"></div>`).join('')}
+      </div>
+    `;
     grid.appendChild(card);
+    render(w.id);
   });
+}
+
+function render(id, showText){
+  const wrap=document.getElementById('rect-'+id);
+  const cnt=state[id];
+  const w=WORDS.find(x=>x.id===id);
+  if(cnt===0){
+    wrap.innerHTML=`<div class="rect-empty">👆</div>`;
+  } else {
+    let h='<div class="rect-sections">';
+    for(let i=0;i<cnt;i++){
+      const lbl=(showText&&w.sylls[i])?w.sylls[i]:(i+1);
+      h+=`<div class="rsect ${COLORS[i]}">${lbl}</div>`;
+    }
+    h+='</div>';
+    wrap.innerHTML=h;
+  }
+  for(let n=1;n<=4;n++){
+    const d=document.getElementById(`d-${id}-${n}`);
+    if(d) d.classList.toggle('on',n<=cnt);
+  }
+}
+
+function tap(id,e){
+  if(checked) return;
+  state[id]=state[id]<4?state[id]+1:0;
+  render(id);
+  const icons=['👏','✂️','👆','🖐️','🤚'];
+  const el=document.createElement('div');
+  el.className='clap';
+  el.textContent=icons[Math.floor(Math.random()*icons.length)];
+  el.style.left=e.clientX+'px';
+  el.style.top=e.clientY+'px';
+  document.body.appendChild(el);
+  el.addEventListener('animationend',()=>el.remove());
+}
+
+function checkAll(){
+  if(checked) return;
+  checked=true; score=0;
+  WORDS.forEach(w=>{
+    const card=document.getElementById('card-'+w.id);
+    const badge=document.getElementById('badge-'+w.id);
+    if(state[w.id]===w.count){
+      score++;
+      card.classList.add('correct');
+      badge.textContent='✅'; badge.classList.add('show');
+      render(w.id,true);
+      const r=card.getBoundingClientRect();
+      boom(r.left+r.width/2, r.top+r.height/2);
+    } else {
+      card.classList.add('wrong');
+      badge.textContent='❌'; badge.classList.add('show');
+      card.addEventListener('animationend',()=>card.classList.remove('wrong'),{once:true});
+      setTimeout(()=>{
+        state[w.id]=w.count; render(w.id,true);
+        const rw=document.getElementById('rect-'+w.id);
+        if(rw) rw.style.opacity='.65';
+      },700);
+    }
+  });
+  document.getElementById('sc').textContent=score;
+  const btn=document.getElementById('checkBtn');
+  btn.classList.add('done'); btn.textContent='🔄 Қайта ойна';
+  btn.onclick=()=>location.reload();
+  toast(score===9?'🎉 Барлығы дұрыс! Керемет!':'✅ '+score+'/9 дұрыс');
+  if(score===9) setTimeout(()=>document.getElementById('win').classList.add('show'),1100);
+}
+
+const PL=['⭐','✨','🌟','💫','🎉'];
+function boom(x,y){
+  for(let i=0;i<6;i++){
+    const p=document.createElement('div');p.className='ptcl';
+    p.textContent=PL[i%5];
+    p.style.left=(x+(Math.random()-.5)*60)+'px';
+    p.style.top=y+'px';
+    p.style.animationDelay=(i*.1)+'s';
+    document.body.appendChild(p);
+    p.addEventListener('animationend',()=>p.remove());
+  }
+}
+let tt;
+function toast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m;t.classList.add('show');
+  clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),3200);
+}
+buildGrid();
 </script>
 </body>
 </html>
